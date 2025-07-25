@@ -29,6 +29,7 @@ class HomeViewController: UIViewController {
         configureSubviews()
         configureConstraints()
         configureStyle()
+        bindActions()
     }
 }
 
@@ -45,7 +46,18 @@ extension HomeViewController: CustomViewProtocol {
     }
     
     func configureStyle() {
+        navigationItem.backButtonTitle = ""
         view.backgroundColor = .black
+    }
+    
+    func bindActions() {
+        navButton.addTarget(self, action: #selector(navButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc func navButtonTapped() {
+        let vc = ItemSearchViewController()
+        
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
