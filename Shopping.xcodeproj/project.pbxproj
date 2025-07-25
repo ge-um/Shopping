@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		03206A332E33B74800D85302 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03206A322E33B74800D85302 /* SnapKit */; };
+		03206A362E33B77A00D85302 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 03206A352E33B77A00D85302 /* Alamofire */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		03206A062E33A5AB00D85302 /* Shopping.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Shopping.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03206A332E33B74800D85302 /* SnapKit in Frameworks */,
+				03206A362E33B77A00D85302 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +85,8 @@
 			);
 			name = Shopping;
 			packageProductDependencies = (
+				03206A322E33B74800D85302 /* SnapKit */,
+				03206A352E33B77A00D85302 /* Alamofire */,
 			);
 			productName = Shopping;
 			productReference = 03206A062E33A5AB00D85302 /* Shopping.app */;
@@ -107,6 +116,10 @@
 			);
 			mainGroup = 032069FD2E33A5AB00D85302;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				03206A312E33B74800D85302 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				03206A342E33B77A00D85302 /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 03206A072E33A5AB00D85302 /* Products */;
 			projectDirPath = "";
@@ -347,6 +360,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		03206A312E33B74800D85302 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		03206A342E33B77A00D85302 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		03206A322E33B74800D85302 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03206A312E33B74800D85302 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		03206A352E33B77A00D85302 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03206A342E33B77A00D85302 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 032069FE2E33A5AB00D85302 /* Project object */;
 }
