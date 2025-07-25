@@ -24,6 +24,7 @@ class ItemSearchViewController: UIViewController {
         configureSubviews()
         configureConstraints()
         configureStyle()
+        bindActions()
     }
 }
 
@@ -42,6 +43,25 @@ extension ItemSearchViewController: CustomViewProtocol {
     func configureStyle() {
         navigationItem.titleView = BoldNavigationTitle(text: "영캠러의 쇼핑쇼핑")
         view.backgroundColor = .black
+    }
+    
+    func bindActions() {
+        itemSearchBar.delegate = self
+    }
+}
+
+extension ItemSearchViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print(#function)
+        
+        let query = searchBar.text!
+        
+        guard query.count >= 2 else {
+            print("텍스트를 두 글자 이상 입력하세요.")
+            return
+        }
+        
+        navigationController?.pushViewController(SearchResultViewController(query: query), animated: true)
     }
 }
 
