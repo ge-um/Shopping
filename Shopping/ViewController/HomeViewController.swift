@@ -1,0 +1,54 @@
+//
+//  HomeViewController.swift
+//  Shopping
+//
+//  Created by 금가경 on 7/25/25.
+//
+
+import SnapKit
+import UIKit
+
+class HomeViewController: UIViewController {
+    let navButton: UIButton = {
+        var config = UIButton.Configuration.filled()
+        
+        config.buttonSize = .large
+        config.baseBackgroundColor = .white
+        config.baseForegroundColor = .black
+        
+        var container = AttributeContainer()
+        container.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+
+        config.attributedTitle = AttributedString("쇼핑하기", attributes: container)
+        
+        return UIButton(configuration: config)
+    }()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureSubviews()
+        configureConstraints()
+        configureStyle()
+    }
+}
+
+extension HomeViewController: CustomViewProtocol {
+    func configureSubviews() {
+        view.addSubview(navButton)
+    }
+    
+    func configureConstraints() {
+        navButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
+    }
+    
+    func configureStyle() {
+        view.backgroundColor = .black
+    }
+}
+
+#Preview {
+    HomeViewController()
+}
