@@ -48,7 +48,7 @@ extension SearchResultViewController: CustomViewProtocol {
         view.backgroundColor = .black
         navigationItem.titleView = BoldNavigationTitle(text: query)
         
-        collectionView.backgroundColor = .red
+        collectionView.backgroundColor = .clear
     }
     
     func configureCollectionViewLayout() {
@@ -57,7 +57,7 @@ extension SearchResultViewController: CustomViewProtocol {
         let cellWidth = deviceWidth - (2 * 12) - (1 * 12)
         
         layout.scrollDirection = .vertical
-        layout.itemSize = CGSize(width: cellWidth / 2, height: cellWidth / 2 + 30)
+        layout.itemSize = CGSize(width: cellWidth / 2, height: cellWidth / 2 + 80)
         layout.minimumInteritemSpacing = 12
         layout.minimumLineSpacing = 8
         layout.sectionInset = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
