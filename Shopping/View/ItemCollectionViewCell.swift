@@ -6,6 +6,7 @@
 //
 
 import SnapKit
+import Kingfisher
 import UIKit
 
 final class ItemCollectionViewCell: UICollectionViewCell {
@@ -14,9 +15,9 @@ final class ItemCollectionViewCell: UICollectionViewCell {
     private let itemImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .gray
-        imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(systemName: "star")
+        imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 20
+        imageView.clipsToBounds = true
         imageView.isUserInteractionEnabled = true
         
         return imageView
@@ -150,6 +151,7 @@ extension ItemCollectionViewCell: CustomViewProtocol {
     }
     
     func configureData(item: Item) {
+        itemImageView.kf.setImage(with: URL(string: item.image))
         mallNameLabel.text = item.mallName
         titleLabel.text = item.title
         priceLabel.text = item.lprice
