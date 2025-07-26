@@ -41,8 +41,8 @@ extension ItemSearchViewController: CustomViewProtocol {
     }
     
     func configureStyle() {
-        navigationItem.titleView = BoldNavigationTitle(text: "영캠러의 쇼핑쇼핑")
         view.backgroundColor = .black
+        navigationItem.titleView = BoldNavigationTitle(text: "영캠러의 쇼핑쇼핑")
     }
     
     func bindActions() {
