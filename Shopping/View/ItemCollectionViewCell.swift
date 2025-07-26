@@ -10,8 +10,8 @@ import UIKit
 
 final class ItemCollectionViewCell: UICollectionViewCell {
     static let identifier = "ItemCollectionViewCell"
-    
-    let itemImageView: UIImageView = {
+        
+    private let itemImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .gray
         imageView.contentMode = .scaleAspectFit
@@ -22,7 +22,7 @@ final class ItemCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    let likeButton: UIButton = {
+    private let likeButton: UIButton = {
         let button = UIButton()
         
         var config = UIButton.Configuration.plain()
@@ -40,7 +40,7 @@ final class ItemCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
-    let companyName: UILabel = {
+    private let mallNameLabel: UILabel = {
         let companyName = UILabel()
         companyName.text = "회사명"
         companyName.textColor = .darkGray
@@ -50,7 +50,7 @@ final class ItemCollectionViewCell: UICollectionViewCell {
         return companyName
     }()
     
-    let title: UILabel = {
+    private let titleLabel: UILabel = {
         let title = UILabel()
         title.text = "매우긴품목이름매우긴품목이름매우긴품목이름매우긴품목이름매우긴품목이름매우긴품목이름매우긴품목이름"
         title.textColor = .white
@@ -60,7 +60,7 @@ final class ItemCollectionViewCell: UICollectionViewCell {
         return title
     }()
     
-    let price: UILabel = {
+    private let priceLabel: UILabel = {
         let price = UILabel()
         price.text = "19,900,000"
         price.textColor = .white
@@ -70,7 +70,7 @@ final class ItemCollectionViewCell: UICollectionViewCell {
         return price
     }()
     
-    let textStackView: UIStackView = {
+    private let textStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .leading
@@ -95,18 +95,18 @@ final class ItemCollectionViewCell: UICollectionViewCell {
 }
 
 extension ItemCollectionViewCell: CustomViewProtocol {
-    func configureSubviews() {
+    internal func configureSubviews() {
         itemImageView.addSubview(likeButton)
         
-        textStackView.addArrangedSubview(companyName)
-        textStackView.addArrangedSubview(title)
-        textStackView.addArrangedSubview(price)
+        textStackView.addArrangedSubview(mallNameLabel)
+        textStackView.addArrangedSubview(titleLabel)
+        textStackView.addArrangedSubview(priceLabel)
         
         contentView.addSubview(itemImageView)
         contentView.addSubview(textStackView)
     }
     
-    func configureConstraints() {
+    internal func configureConstraints() {
         itemImageView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
             make.height.equalTo(itemImageView.snp.width).multipliedBy(0.9)
@@ -124,11 +124,11 @@ extension ItemCollectionViewCell: CustomViewProtocol {
         }
     }
     
-    func configureStyle() {
+    internal func configureStyle() {
         self.backgroundColor = .clear
     }
     
-    func bindActions() {
+    internal func bindActions() {
         likeButton.addTarget(self, action: #selector(likeButtonTapped), for: .touchUpInside)
         
         likeButton.configurationUpdateHandler = {
@@ -144,8 +144,14 @@ extension ItemCollectionViewCell: CustomViewProtocol {
         }
     }
     
-    @objc func likeButtonTapped() {
+    @objc private func likeButtonTapped() {
         print(#function)
         likeButton.isSelected.toggle()
+    }
+    
+    func configureData(item: Item) {
+        mallNameLabel.text = item.mallName
+        titleLabel.text = item.title
+        priceLabel.text = item.lprice
     }
 }

@@ -5,11 +5,14 @@
 //  Created by 금가경 on 7/26/25.
 //
 
+import Alamofire
 import SnapKit
 import UIKit
 
 class SearchResultViewController: UIViewController {
     let query: String
+    var items = [Item]()
+    
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     init(query: String) {
@@ -24,14 +27,12 @@ class SearchResultViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(Bundle.main.infoDictionary?["NaverClientSecret"])
-        print(Bundle.main.infoDictionary?["NaverClientId"])
-        
         configureSubviews()
         configureConstraints()
         configureStyle()
         configureCollectionViewLayout()
         configureCollectionView()
+        callRequest(query: query)
     }
 }
 
@@ -67,15 +68,44 @@ extension SearchResultViewController: CustomViewProtocol {
         
         collectionView.collectionViewLayout = layout
     }
+    
+    func callRequest(query: String) {
+        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=100"
+        let header: HTTPHeaders = [
+            "X-Naver-Client-Id":
+                Bundle.main.infoDictionary?["NaverClientId"] as! String,
+            "X-Naver-Client-Secret":
+                Bundle.main.infoDictionary?["NaverClientSecret"] as! String
+        ]
+        
+        AF.request(url, method: .get, headers: header)
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: ShoppingResponse.self) { [weak self] response in
+                guard let self = self else { return }
+                
+                switch response.result {
+                case .success(let shoppingResponse):
+                    print("success", shoppingResponse)
+
+                    self.items = shoppingResponse.items
+                    collectionView.reloadData()
+                    
+                case .failure(let error):
+                    print("error", error)
+                }
+            }
+    }
 }
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 100
+        return items.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
+        
+        cell.configureData(item: items[indexPath.row])
         
         return cell
     }
