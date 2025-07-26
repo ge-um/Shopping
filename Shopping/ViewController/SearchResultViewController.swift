@@ -24,6 +24,9 @@ class SearchResultViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print(Bundle.main.infoDictionary?["NaverClientSecret"])
+        print(Bundle.main.infoDictionary?["NaverClientId"])
+        
         configureSubviews()
         configureConstraints()
         configureStyle()
