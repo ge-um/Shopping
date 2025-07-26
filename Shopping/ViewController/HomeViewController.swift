@@ -9,7 +9,7 @@ import SnapKit
 import UIKit
 
 class HomeViewController: UIViewController {
-    let navButton: UIButton = {
+    private let navButton: UIButton = {
         var config = UIButton.Configuration.filled()
         
         config.buttonSize = .large
@@ -34,22 +34,22 @@ class HomeViewController: UIViewController {
 }
 
 extension HomeViewController: CustomViewProtocol {
-    func configureSubviews() {
+    internal func configureSubviews() {
         view.addSubview(navButton)
     }
     
-    func configureConstraints() {
+    internal func configureConstraints() {
         navButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
         }
     }
     
-    func configureStyle() {
+    internal func configureStyle() {
         view.backgroundColor = .black
     }
     
-    func bindActions() {
+    internal func bindActions() {
         navButton.addTarget(self, action: #selector(navButtonTapped), for: .touchUpInside)
     }
     

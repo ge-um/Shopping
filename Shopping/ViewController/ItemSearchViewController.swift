@@ -9,7 +9,7 @@ import SnapKit
 import UIKit
 
 class ItemSearchViewController: UIViewController {
-    let itemSearchBar: UISearchBar = {
+    private let itemSearchBar: UISearchBar = {
         let searchBar = UISearchBar()
         
         searchBar.placeholder = "브랜드, 상품, 프로필, 태그 등"
@@ -29,29 +29,29 @@ class ItemSearchViewController: UIViewController {
 }
 
 extension ItemSearchViewController: CustomViewProtocol {
-    func configureSubviews() {
+    internal func configureSubviews() {
         view.addSubview(itemSearchBar)
     }
     
-    func configureConstraints() {
+    internal func configureConstraints() {
         itemSearchBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
     }
     
-    func configureStyle() {
+    internal func configureStyle() {
         view.backgroundColor = .black
         navigationItem.titleView = BoldNavigationTitle(text: "영캠러의 쇼핑쇼핑")
     }
     
-    func bindActions() {
+    internal func bindActions() {
         itemSearchBar.delegate = self
     }
 }
 
 extension ItemSearchViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    internal func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         print(#function)
         
         let query = searchBar.text!

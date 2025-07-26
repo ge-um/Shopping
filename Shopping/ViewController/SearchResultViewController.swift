@@ -10,10 +10,10 @@ import SnapKit
 import UIKit
 
 class SearchResultViewController: UIViewController {
-    let query: String
-    var items = [Item]()
+    private let query: String
+    private var items = [Item]()
     
-    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     init(query: String) {
         self.query = query
@@ -37,25 +37,25 @@ class SearchResultViewController: UIViewController {
 }
 
 extension SearchResultViewController: CustomViewProtocol {
-    func configureSubviews() {
+    internal func configureSubviews() {
         view.addSubview(collectionView)
     }
     
-    func configureConstraints() {
+    internal func configureConstraints() {
         collectionView.snp.makeConstraints { make in
             make.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
             make.verticalEdges.equalTo(view.safeAreaLayoutGuide)
         }
     }
     
-    func configureStyle() {
+    internal func configureStyle() {
         view.backgroundColor = .black
         navigationItem.titleView = BoldNavigationTitle(text: query)
         
         collectionView.backgroundColor = .clear
     }
     
-    func configureCollectionViewLayout() {
+    internal func configureCollectionViewLayout() {
         let layout = UICollectionViewFlowLayout()
         let deviceWidth = UIScreen.main.bounds.width
         let cellWidth = deviceWidth - (2 * 12) - (1 * 12)
@@ -69,7 +69,7 @@ extension SearchResultViewController: CustomViewProtocol {
         collectionView.collectionViewLayout = layout
     }
     
-    func callRequest(query: String) {
+    private func callRequest(query: String) {
         let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=100"
         let header: HTTPHeaders = [
             "X-Naver-Client-Id":
@@ -98,11 +98,11 @@ extension SearchResultViewController: CustomViewProtocol {
 }
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
         
         cell.configureData(item: items[indexPath.row])
@@ -110,7 +110,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         return cell
     }
     
-    func configureCollectionView() {
+    private func configureCollectionView() {
         collectionView.delegate = self
         collectionView.dataSource = self
         

@@ -150,7 +150,7 @@ extension ItemCollectionViewCell: CustomViewProtocol {
         likeButton.isSelected.toggle()
     }
     
-    func configureData(item: Item) {
+    internal func configureData(item: Item) {
         itemImageView.kf.setImage(with: URL(string: item.image))
         mallNameLabel.text = item.mallName
         titleLabel.text = item.title
