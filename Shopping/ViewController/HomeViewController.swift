@@ -46,7 +46,6 @@ extension HomeViewController: CustomViewProtocol {
     }
     
     func configureStyle() {
-        navigationItem.backButtonTitle = ""
         view.backgroundColor = .black
     }
     
