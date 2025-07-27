@@ -67,6 +67,7 @@ final class ItemCollectionViewCell: UICollectionViewCell {
         price.textColor = .white
         price.font = .systemFont(ofSize: 16, weight: .bold)
         price.numberOfLines = 1
+
         
         return price
     }()
@@ -154,6 +155,6 @@ extension ItemCollectionViewCell: CustomViewProtocol {
         itemImageView.kf.setImage(with: URL(string: item.image))
         mallNameLabel.text = item.mallName
         titleLabel.text = item.title
-        priceLabel.text = item.lprice
+        priceLabel.text = ShoppingNumberFormatter.shared.formatted(number: item.lprice)
     }
 }
