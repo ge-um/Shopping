@@ -13,6 +13,13 @@ class SearchResultViewController: UIViewController {
     private let query: String
     private var items = [Item]()
     
+    private let totalLabel = {
+        let label = UILabel()
+        label.textColor = .systemGreen
+        label.font = .systemFont(ofSize: 13, weight: .bold)
+        return label
+    }()
+    
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     init(query: String) {
@@ -38,13 +45,20 @@ class SearchResultViewController: UIViewController {
 
 extension SearchResultViewController: CustomViewProtocol {
     internal func configureSubviews() {
+        view.addSubview(totalLabel)
         view.addSubview(collectionView)
     }
     
     internal func configureConstraints() {
+        totalLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
+            make.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(12)
+        }
+        
         collectionView.snp.makeConstraints { make in
+            make.top.equalTo(totalLabel.snp.bottom).offset(8)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
             make.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
-            make.verticalEdges.equalTo(view.safeAreaLayoutGuide)
         }
     }
     
@@ -86,8 +100,10 @@ extension SearchResultViewController: CustomViewProtocol {
                 switch response.result {
                 case .success(let shoppingResponse):
                     print("success", shoppingResponse)
-
+                    
+                    self.totalLabel.text = "\(shoppingResponse.total.formatted(.number)) 개의 검색 결과"
                     self.items = shoppingResponse.items
+                    
                     collectionView.reloadData()
                     
                 case .failure(let error):
@@ -99,6 +115,7 @@ extension SearchResultViewController: CustomViewProtocol {
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
         return items.count
     }
     
