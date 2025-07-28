@@ -9,7 +9,6 @@ import UIKit
 
 // TODO: buttonType sortType으로 교체 후 정확도 버튼 기본으로 선택하기
 final class SortStackView: UIStackView {
-    private let buttonType = ["정확도", "날짜순", "가격높은순", "가격낮은순"]
     var buttons: [UIButton] = []
         
     override init(frame: CGRect) {
@@ -18,8 +17,11 @@ final class SortStackView: UIStackView {
         self.distribution = .fillProportionally
         self.spacing = 8
         
-        buttonType.forEach {
-            let button = makeButton(title: $0)
+        SortType.allCases.forEach {
+            let button = makeButton(title: $0.title)
+            
+            if $0 == .sim { button.isSelected = true }
+            
             buttons.append(button)
             self.addArrangedSubview(button)
         }
