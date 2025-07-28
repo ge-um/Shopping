@@ -20,6 +20,8 @@ class SearchResultViewController: UIViewController {
         return label
     }()
     
+    private let sortStackView = SortStackView()
+    
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     init(query: String) {
@@ -37,6 +39,7 @@ class SearchResultViewController: UIViewController {
         configureSubviews()
         configureConstraints()
         configureStyle()
+        bindActions()
         configureCollectionViewLayout()
         configureCollectionView()
         callRequest(query: query)
@@ -46,6 +49,7 @@ class SearchResultViewController: UIViewController {
 extension SearchResultViewController: CustomViewProtocol {
     internal func configureSubviews() {
         view.addSubview(totalLabel)
+        view.addSubview(sortStackView)
         view.addSubview(collectionView)
     }
     
@@ -55,8 +59,13 @@ extension SearchResultViewController: CustomViewProtocol {
             make.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(12)
         }
         
-        collectionView.snp.makeConstraints { make in
+        sortStackView.snp.makeConstraints { make in
             make.top.equalTo(totalLabel.snp.bottom).offset(8)
+            make.leading.equalTo(view.safeAreaLayoutGuide).inset(12)
+        }
+        
+        collectionView.snp.makeConstraints { make in
+            make.top.equalTo(sortStackView.snp.bottom).offset(8)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
             make.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
         }
@@ -67,6 +76,30 @@ extension SearchResultViewController: CustomViewProtocol {
         navigationItem.titleView = BoldNavigationTitle(text: query)
         
         collectionView.backgroundColor = .clear
+    }
+    
+    internal func bindActions() {
+        for button in sortStackView.buttons {
+            button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+        }
+    }
+    
+    @objc func buttonTapped(_ sender: UIButton) {
+        print(sender, #function)
+        
+        for button in sortStackView.buttons {
+            button.isSelected = button == sender ? true : false
+            
+            if button == sender {
+                switch button.titleLabel?.text {
+                case "가격낮은순":
+                    items.sort { $0.lprice < $1.lprice }
+                default: break
+                }
+                
+                collectionView.reloadData()
+            }
+        }
     }
     
     internal func configureCollectionViewLayout() {
