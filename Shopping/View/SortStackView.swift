@@ -7,6 +7,7 @@
 
 import UIKit
 
+// TODO: buttonType sortType으로 교체 후 정확도 버튼 기본으로 선택하기
 final class SortStackView: UIStackView {
     private let buttonType = ["정확도", "날짜순", "가격높은순", "가격낮은순"]
     var buttons: [UIButton] = []

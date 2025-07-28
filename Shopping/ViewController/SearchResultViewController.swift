@@ -53,19 +53,18 @@ extension SearchResultViewController {
             button.isSelected = button == sender ? true : false
             
             if button == sender {
-                switch button.titleLabel?.text {
-                case "가격낮은순":
-                    items.sort { $0.lprice < $1.lprice }
-                default: break
+                guard let title = button.titleLabel?.text, let type = SortType.allCases.first(where: { $0.title == title }) else {
+                    return
                 }
-                
-                searchResultView.collectionView.reloadData()
+                items.removeAll()
+                callRequest(query: query, type: type)
             }
         }
     }
     
-    private func callRequest(query: String) {
-        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=30&start=\(start)"
+    private func callRequest(query: String, type: SortType = .sim) {
+        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=30&start=\(start)&sort=\(type.rawValue)"
+        
         let header: HTTPHeaders = [
             "X-Naver-Client-Id":
                 Bundle.main.infoDictionary?["NaverClientId"] as! String,
