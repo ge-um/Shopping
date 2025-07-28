@@ -12,6 +12,8 @@ import UIKit
 class SearchResultViewController: UIViewController {
     private let query: String
     private var items = [Item]()
+    private var start = 1
+    private var isEnd = false
     
     private let totalLabel = {
         let label = UILabel()
@@ -84,9 +86,8 @@ extension SearchResultViewController: CustomViewProtocol {
         }
     }
     
+    // TODO: - 버튼에 따라 query 바꿔서 fetch하기
     @objc func buttonTapped(_ sender: UIButton) {
-        print(sender, #function)
-        
         for button in sortStackView.buttons {
             button.isSelected = button == sender ? true : false
             
@@ -117,7 +118,7 @@ extension SearchResultViewController: CustomViewProtocol {
     }
     
     private func callRequest(query: String) {
-        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=100"
+        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=30&start=\(start)"
         let header: HTTPHeaders = [
             "X-Naver-Client-Id":
                 Bundle.main.infoDictionary?["NaverClientId"] as! String,
@@ -134,9 +135,15 @@ extension SearchResultViewController: CustomViewProtocol {
                 case .success(let shoppingResponse):
                     print("success", shoppingResponse)
                     
-                    self.totalLabel.text = "\(shoppingResponse.total.formatted(.number)) 개의 검색 결과"
-                    self.items = shoppingResponse.items
+                    // TODO: - 마지막에 total이 0이 되는 버그 있음.
+                    let total = shoppingResponse.total
+                    self.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
                     
+                    let items = shoppingResponse.items
+                    self.items.append(contentsOf: items)
+                    
+                    isEnd = total == items.count
+                                        
                     collectionView.reloadData()
                     
                 case .failure(let error):
@@ -147,6 +154,13 @@ extension SearchResultViewController: CustomViewProtocol {
 }
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    private func configureCollectionView() {
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        
+        collectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
+    }
+    
     internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         return items.count
@@ -160,10 +174,10 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         return cell
     }
     
-    private func configureCollectionView() {
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        
-        collectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
+    internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.item == items.count - 3 && !isEnd {
+            start += 30
+            callRequest(query: query)
+        }
     }
 }
