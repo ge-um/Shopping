@@ -58,6 +58,7 @@ extension SearchResultViewController {
                 }
                 items.removeAll()
                 callRequest(query: query, type: type)
+                start = 1
             }
         }
     }
@@ -81,17 +82,18 @@ extension SearchResultViewController {
                 case .success(let shoppingResponse):
                     print("success", shoppingResponse)
                     
-                    if start == 1 {
-                        let total = shoppingResponse.total
-                        searchResultView.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
-                    }
-                    
                     let items = shoppingResponse.items
                     self.items.append(contentsOf: items)
                     
                     isEnd = shoppingResponse.total == 0
                     
                     searchResultView.collectionView.reloadData()
+                    
+                    if start == 1 {
+                        let total = shoppingResponse.total
+                        searchResultView.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
+                        searchResultView.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+                    }
                     
                 case .failure(let error):
                     print("error", error)
