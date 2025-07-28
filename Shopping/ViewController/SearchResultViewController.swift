@@ -47,7 +47,6 @@ extension SearchResultViewController {
         }
     }
     
-    // TODO: - 버튼에 따라 query 바꿔서 fetch하기
     @objc func buttonTapped(_ sender: UIButton) {
         for button in searchResultView.sortStackView.buttons {
             button.isSelected = button == sender ? true : false
