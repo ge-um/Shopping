@@ -6,7 +6,6 @@
 //
 
 import Alamofire
-import SnapKit
 import UIKit
 
 class SearchResultViewController: UIViewController {
@@ -15,20 +14,15 @@ class SearchResultViewController: UIViewController {
     private var start = 1
     private var isEnd = false
     
-    private let totalLabel = {
-        let label = UILabel()
-        label.textColor = .systemGreen
-        label.font = .systemFont(ofSize: 13, weight: .bold)
-        return label
-    }()
-    
-    private let sortStackView = SortStackView()
-    
-    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    private let searchResultView = SearchResultView()
     
     init(query: String) {
         self.query = query
         super.init(nibName: nil, bundle: nil)
+    }
+    
+    override func loadView() {
+        self.view = searchResultView
     }
     
     required init?(coder: NSCoder) {
@@ -38,57 +32,24 @@ class SearchResultViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        configureSubviews()
-        configureConstraints()
-        configureStyle()
+        navigationItem.titleView = BoldNavigationTitle(text: query)
+        
         bindActions()
-        configureCollectionViewLayout()
         configureCollectionView()
         callRequest(query: query)
     }
 }
 
-extension SearchResultViewController: CustomViewProtocol {
-    internal func configureSubviews() {
-        view.addSubview(totalLabel)
-        view.addSubview(sortStackView)
-        view.addSubview(collectionView)
-    }
-    
-    internal func configureConstraints() {
-        totalLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
-            make.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(12)
-        }
-        
-        sortStackView.snp.makeConstraints { make in
-            make.top.equalTo(totalLabel.snp.bottom).offset(8)
-            make.leading.equalTo(view.safeAreaLayoutGuide).inset(12)
-        }
-        
-        collectionView.snp.makeConstraints { make in
-            make.top.equalTo(sortStackView.snp.bottom).offset(8)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
-        }
-    }
-    
-    internal func configureStyle() {
-        view.backgroundColor = .black
-        navigationItem.titleView = BoldNavigationTitle(text: query)
-        
-        collectionView.backgroundColor = .clear
-    }
-    
+extension SearchResultViewController {
     internal func bindActions() {
-        for button in sortStackView.buttons {
+        for button in searchResultView.sortStackView.buttons {
             button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
         }
     }
     
     // TODO: - 버튼에 따라 query 바꿔서 fetch하기
     @objc func buttonTapped(_ sender: UIButton) {
-        for button in sortStackView.buttons {
+        for button in searchResultView.sortStackView.buttons {
             button.isSelected = button == sender ? true : false
             
             if button == sender {
@@ -98,23 +59,9 @@ extension SearchResultViewController: CustomViewProtocol {
                 default: break
                 }
                 
-                collectionView.reloadData()
+                searchResultView.collectionView.reloadData()
             }
         }
-    }
-    
-    internal func configureCollectionViewLayout() {
-        let layout = UICollectionViewFlowLayout()
-        let deviceWidth = UIScreen.main.bounds.width
-        let cellWidth = deviceWidth - (2 * 12) - (1 * 12)
-        
-        layout.scrollDirection = .vertical
-        layout.itemSize = CGSize(width: cellWidth / 2, height: cellWidth / 2 + 80)
-        layout.minimumInteritemSpacing = 12
-        layout.minimumLineSpacing = 8
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
-        
-        collectionView.collectionViewLayout = layout
     }
     
     private func callRequest(query: String) {
@@ -134,18 +81,18 @@ extension SearchResultViewController: CustomViewProtocol {
                 switch response.result {
                 case .success(let shoppingResponse):
                     print("success", shoppingResponse)
-                                        
+                    
                     if start == 1 {
                         let total = shoppingResponse.total
-                        self.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
+                        searchResultView.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
                     }
-
+                    
                     let items = shoppingResponse.items
                     self.items.append(contentsOf: items)
                     
                     isEnd = shoppingResponse.total == 0
-                                        
-                    collectionView.reloadData()
+                    
+                    searchResultView.collectionView.reloadData()
                     
                 case .failure(let error):
                     print("error", error)
@@ -156,10 +103,10 @@ extension SearchResultViewController: CustomViewProtocol {
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     private func configureCollectionView() {
-        collectionView.delegate = self
-        collectionView.dataSource = self
+        searchResultView.collectionView.delegate = self
+        searchResultView.collectionView.dataSource = self
         
-        collectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
+        searchResultView.collectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
     }
     
     internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
