@@ -134,15 +134,16 @@ extension SearchResultViewController: CustomViewProtocol {
                 switch response.result {
                 case .success(let shoppingResponse):
                     print("success", shoppingResponse)
-                    
-                    // TODO: - 마지막에 total이 0이 되는 버그 있음.
-                    let total = shoppingResponse.total
-                    self.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
-                    
+                                        
+                    if start == 1 {
+                        let total = shoppingResponse.total
+                        self.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
+                    }
+
                     let items = shoppingResponse.items
                     self.items.append(contentsOf: items)
                     
-                    isEnd = total == items.count
+                    isEnd = shoppingResponse.total == 0
                                         
                     collectionView.reloadData()
                     
