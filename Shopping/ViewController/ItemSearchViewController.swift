@@ -55,7 +55,7 @@ extension ItemSearchViewController: UISearchBarDelegate {
         let query = searchBar.text!
         
         guard query.count >= 2 else {
-            print("텍스트를 두 글자 이상 입력하세요.")
+            showAlert(message: "텍스트를 두 글자 이상 입력하세요")
             return
         }
         
