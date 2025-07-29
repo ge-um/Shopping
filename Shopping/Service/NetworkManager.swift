@@ -33,7 +33,7 @@ class NetworkManager {
                 case .success(let shoppingResponse):
                     completionHandler(.success(shoppingResponse))
                     
-                case .failure(let error):
+                case .failure(_):
                     guard let data = response.data else {
                         completionHandler(.failure(AppError.unknown))
                         return
