@@ -53,7 +53,7 @@ class SearchResultView: BaseView {
         }
         
         peopleAlsoLikeCollectionView.snp.makeConstraints { make in
-            make.height.equalTo(160)
+            make.height.equalTo(220)
             make.bottom.equalTo(safeAreaLayoutGuide)
             make.horizontalEdges.equalTo(safeAreaLayoutGuide)
         }
@@ -62,7 +62,8 @@ class SearchResultView: BaseView {
     internal override func configureStyle() {
         backgroundColor = .black        
         collectionView.backgroundColor = .clear
-        peopleAlsoLikeCollectionView.backgroundColor = .red
+        peopleAlsoLikeCollectionView.backgroundColor = .white.withAlphaComponent(0.3)
+        peopleAlsoLikeCollectionView.layer.cornerRadius = 10
     }
     
     internal func configureCollectionViewLayout() {
@@ -85,9 +86,9 @@ class SearchResultView: BaseView {
         let cellWidth = deviceWidth - (1 * 12) - (3 * 12)
         
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: cellWidth / 4 + 16, height: 160 - 12 * 2)
+        layout.itemSize = CGSize(width: cellWidth / 4 + 16, height: 220 - 24 * 2)
         layout.minimumInteritemSpacing = 12
-        layout.sectionInset = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 0)
+        layout.sectionInset = UIEdgeInsets(top: 24, left: 12, bottom: 24, right: 0)
         
         peopleAlsoLikeCollectionView.collectionViewLayout = layout
         
