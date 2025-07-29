@@ -7,7 +7,7 @@
 
 import UIKit
 
-// TODO: buttonType sortType으로 교체 후 정확도 버튼 기본으로 선택하기
+// TODO: - 똑같은 쿼리 + 가까운 시간으로 검색했을 때 API 콜 막기
 final class SortStackView: UIStackView {
     var buttons: [UIButton] = []
         

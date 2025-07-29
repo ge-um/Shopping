@@ -8,6 +8,7 @@
 import Alamofire
 import Foundation
 
+// TODO: - api 통신 실패시 대응
 class NetworkManager {
     static let shared = NetworkManager()
     
