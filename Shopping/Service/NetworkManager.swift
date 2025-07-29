@@ -29,7 +29,6 @@ class NetworkManager {
             .responseDecodable(of: ShoppingResponse.self) { response in
                 switch response.result {
                 case .success(let shoppingResponse):
-                    print("success", shoppingResponse)
                     
                     completionHandler(shoppingResponse)
                     

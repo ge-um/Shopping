@@ -148,7 +148,6 @@ extension ItemCollectionViewCell: CustomViewProtocol {
     }
     
     @objc private func likeButtonTapped() {
-        print(#function)
         likeButton.isSelected.toggle()
     }
     

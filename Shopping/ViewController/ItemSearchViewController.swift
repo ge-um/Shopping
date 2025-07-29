@@ -52,8 +52,6 @@ extension ItemSearchViewController: CustomViewProtocol {
 
 extension ItemSearchViewController: UISearchBarDelegate {
     internal func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print(#function)
-        
         let query = searchBar.text!
         
         guard query.count >= 2 else {

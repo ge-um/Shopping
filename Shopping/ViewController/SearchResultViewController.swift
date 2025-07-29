@@ -78,12 +78,12 @@ extension SearchResultViewController {
         }
     }
     
-    // TODO: - 버튼 전환 제대로 안되는 버그 있음. 
     @objc func buttonTapped(_ sender: UIButton) {
+        print(#function)
         for button in searchResultView.sortStackView.buttons {
             button.isSelected = button == sender ? true : false
             
-            if button != sender { return }
+            if button != sender { continue }
             
             guard let title = button.titleLabel?.text, let type = SortType.allCases.first(where: { $0.title == title }) else {
                 return
