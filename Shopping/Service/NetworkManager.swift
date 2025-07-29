@@ -14,7 +14,7 @@ class NetworkManager {
     
     private init() {}
     
-    func callRequest(query: String, start: Int, type: SortType = .sim, completionHandler: @escaping (ShoppingResponse) -> Void) {
+    func callRequest(query: String = "강아지", start: Int, type: SortType = .sim, completionHandler: @escaping (ShoppingResponse) -> Void) {
         let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=30&start=\(start)&sort=\(type.rawValue)"
         
         let header: HTTPHeaders = [

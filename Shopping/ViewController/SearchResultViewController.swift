@@ -9,11 +9,13 @@ import Alamofire
 import UIKit
 
 class SearchResultViewController: UIViewController {
+    /// collectionView Property
     private let query: String
     private var items = [Item]()
     private var start = 1
     private var isEnd = false
     
+    /// peopleAlsoLikeCollectionView Property
     private var recommendedItems = [Item]()
     
     private let searchResultView = SearchResultView()
@@ -38,7 +40,11 @@ class SearchResultViewController: UIViewController {
         
         bindActions()
         configureCollectionView()
-        
+        configureInitialNetworkData()
+    }
+    
+    // TODO: - 비동기처리 하기
+    func configureInitialNetworkData() {
         NetworkManager.shared.callRequest(query: query, start: start) { [weak self] shoppingResponse in
             
             guard let self else { return }
@@ -48,13 +54,20 @@ class SearchResultViewController: UIViewController {
             let total = shoppingResponse.total
             searchResultView.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
         }
+        
+        NetworkManager.shared.callRequest(start: 1) { [weak self] shoppingResponse in
+            
+            guard let self else { return }
+            
+            self.recommendedItems = shoppingResponse.items
+            searchResultView.peopleAlsoLikeCollectionView.reloadData()
+        }
     }
     
     func initializeItems(items: [Item]) {
         self.items = items
         
         searchResultView.collectionView.reloadData()
-        searchResultView.peopleAlsoLikeCollectionView.reloadData()
     }
 }
 
@@ -65,6 +78,7 @@ extension SearchResultViewController {
         }
     }
     
+    // TODO: - 버튼 전환 제대로 안되는 버그 있음. 
     @objc func buttonTapped(_ sender: UIButton) {
         for button in searchResultView.sortStackView.buttons {
             button.isSelected = button == sender ? true : false
@@ -100,14 +114,29 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
     }
     
     internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return items.count
+        
+        switch collectionView {
+            
+        case searchResultView.collectionView: return items.count
+        case searchResultView.peopleAlsoLikeCollectionView: return recommendedItems.count
+            
+        default: return 0
+            
+        }
     }
     
     internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
         
-        cell.configureData(item: items[indexPath.row])
-        
+        switch collectionView {
+            
+        case searchResultView.collectionView: cell.configureData(item: items[indexPath.row])
+        case searchResultView.peopleAlsoLikeCollectionView: cell.configureData(item: recommendedItems[indexPath.row])
+            
+        default: break
+            
+        }
+                
         return cell
     }
     
