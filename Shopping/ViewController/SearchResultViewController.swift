@@ -44,27 +44,38 @@ class SearchResultViewController: UIViewController {
     }
     
     // TODO: - 비동기처리 하기
-    func configureInitialNetworkData() {
-        NetworkManager.shared.callRequest(query: query, start: start) { [weak self] shoppingResponse in
-            
+    // TODO: - 중복 줄이기
+    private func configureInitialNetworkData() {
+        NetworkManager.shared.callRequest(query: query, start: start) { [weak self] result in
             guard let self else { return }
-            
-            initializeItems(items: shoppingResponse.items)
-            
-            let total = shoppingResponse.total
-            searchResultView.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
+
+            switch result {
+            case .success(let response):
+                initializeItems(items: response.items)
+                
+                let total = response.total
+                searchResultView.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
+                
+            case .failure(let error):
+                showAlert(message: error.localizedDescription)
+            }
         }
         
-        NetworkManager.shared.callRequest(start: 1) { [weak self] shoppingResponse in
-            
+        NetworkManager.shared.callRequest(start: 1) { [weak self] result in
             guard let self else { return }
             
-            self.recommendedItems = shoppingResponse.items
-            searchResultView.peopleAlsoLikeCollectionView.reloadData()
+            switch result {
+            case .success(let response):
+                self.recommendedItems = response.items
+                searchResultView.peopleAlsoLikeCollectionView.reloadData()
+            case .failure(let error):
+                showAlert(message: error.localizedDescription)
+            }
+
         }
     }
     
-    func initializeItems(items: [Item]) {
+    private func initializeItems(items: [Item]) {
         self.items = items
         
         searchResultView.collectionView.reloadData()
@@ -91,12 +102,17 @@ extension SearchResultViewController {
             
             start = 1
             
-            NetworkManager.shared.callRequest(query: query, start: start, type: type) { [weak self] shoppingResponse in
+            NetworkManager.shared.callRequest(query: query, start: start, type: type) { [weak self] result in
                 guard let self = self else { return }
                 
-                initializeItems(items: shoppingResponse.items)
-                
-                searchResultView.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+                switch result {
+                case .success(let response):
+                    initializeItems(items: response.items)
+                    
+                    searchResultView.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+                case.failure(let error):
+                    showAlert(message: error.localizedDescription)
+                }
             }
         }
     }
@@ -144,15 +160,20 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         if indexPath.item == items.count - 3 && !isEnd {
             start += 30
             
-            NetworkManager.shared.callRequest(query: query, start: start) { [weak self] shoppingResponse in
+            NetworkManager.shared.callRequest(query: query, start: start) { [weak self] result in
                 guard let self = self else { return }
                 
-                let items = shoppingResponse.items
-                self.items.append(contentsOf: items)
-                
-                isEnd = shoppingResponse.total == 0
-                
-                searchResultView.collectionView.reloadData()
+                switch result {
+                case .success(let response):
+                    let items = response.items
+                    self.items.append(contentsOf: items)
+                    
+                    isEnd = response.total == 0
+                    
+                    searchResultView.collectionView.reloadData()
+                case .failure(let error):
+                    showAlert(message: error.localizedDescription)
+                }
             }
         }
     }

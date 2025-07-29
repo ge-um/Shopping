@@ -5,8 +5,6 @@
 //  Created by 금가경 on 7/26/25.
 //
 
-import Foundation
-
 struct ShoppingResponse: Decodable {
     let total: Int
     let items: [Item]
