@@ -157,6 +157,6 @@ extension ItemCollectionViewCell: CustomViewProtocol {
         itemImageView.kf.setImage(with: URL(string: item.image))
         mallNameLabel.text = item.mallName
         titleLabel.text = item.title
-        priceLabel.text = ShoppingNumberFormatter.shared.formatted(number: item.lprice)
+        priceLabel.text = Int(item.lprice)?.formatted(.number)
     }
 }

@@ -6,10 +6,10 @@
 //
 
 enum SortType: String, CaseIterable {
-    case sim = "sim"
-    case date = "date"
-    case asc = "asc"
-    case dsc = "dsc"
+    case sim
+    case date
+    case asc
+    case dsc
     
     var title: String {
         switch self {
