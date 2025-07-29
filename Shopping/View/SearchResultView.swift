@@ -20,10 +20,19 @@ class SearchResultView: BaseView {
     
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
+    let peopleAlsoLikeCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureCollectionViewLayout()
+        configurePeopleAlsoLikeCollectionViewLayout()
+    }
+    
     internal override func configureSubviews() {
         addSubview(totalLabel)
         addSubview(sortStackView)
         addSubview(collectionView)
+        addSubview(peopleAlsoLikeCollectionView)
     }
     
     internal override func configureConstraints() {
@@ -39,6 +48,12 @@ class SearchResultView: BaseView {
         
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(sortStackView.snp.bottom).offset(8)
+            make.bottom.equalTo(peopleAlsoLikeCollectionView.snp.top)
+            make.horizontalEdges.equalTo(safeAreaLayoutGuide)
+        }
+        
+        peopleAlsoLikeCollectionView.snp.makeConstraints { make in
+            make.height.equalTo(160)
             make.bottom.equalTo(safeAreaLayoutGuide)
             make.horizontalEdges.equalTo(safeAreaLayoutGuide)
         }
@@ -47,9 +62,10 @@ class SearchResultView: BaseView {
     internal override func configureStyle() {
         backgroundColor = .black        
         collectionView.backgroundColor = .clear
+        peopleAlsoLikeCollectionView.backgroundColor = .red
     }
     
-    internal override func configureCollectionViewLayout() {
+    internal func configureCollectionViewLayout() {
         let layout = UICollectionViewFlowLayout()
         let deviceWidth = UIScreen.main.bounds.width
         let cellWidth = deviceWidth - (2 * 12) - (1 * 12)
@@ -61,5 +77,19 @@ class SearchResultView: BaseView {
         layout.sectionInset = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
         
         collectionView.collectionViewLayout = layout
+    }
+    
+    internal func configurePeopleAlsoLikeCollectionViewLayout() {
+        let layout = UICollectionViewFlowLayout()
+        let deviceWidth = UIScreen.main.bounds.width
+        let cellWidth = deviceWidth - (1 * 12) - (3 * 12)
+        
+        layout.scrollDirection = .horizontal
+        layout.itemSize = CGSize(width: cellWidth / 4 + 16, height: 160 - 12 * 2)
+        layout.minimumInteritemSpacing = 12
+        layout.sectionInset = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 0)
+        
+        peopleAlsoLikeCollectionView.collectionViewLayout = layout
+        
     }
 }

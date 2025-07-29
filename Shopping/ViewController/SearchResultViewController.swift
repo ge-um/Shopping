@@ -14,6 +14,8 @@ class SearchResultViewController: UIViewController {
     private var start = 1
     private var isEnd = false
     
+    private var recommendedItems = [Item]()
+    
     private let searchResultView = SearchResultView()
     
     init(query: String) {
@@ -89,21 +91,41 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
     private func configureCollectionView() {
         searchResultView.collectionView.delegate = self
         searchResultView.collectionView.dataSource = self
-        
         searchResultView.collectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
+        
+        searchResultView.peopleAlsoLikeCollectionView.delegate = self
+        searchResultView.peopleAlsoLikeCollectionView.dataSource = self
+        searchResultView.peopleAlsoLikeCollectionView.register(RecommendedItemCollectionViewCell.self, forCellWithReuseIdentifier: RecommendedItemCollectionViewCell.identifier)
     }
     
     internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return items.count
+        switch collectionView {
+            
+        case searchResultView.collectionView: return items.count
+        case searchResultView.peopleAlsoLikeCollectionView: return 6
+            
+        default: return 0
+        }
     }
     
     internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
         
-        cell.configureData(item: items[indexPath.row])
-        
-        return cell
+        switch collectionView {
+        case searchResultView.collectionView:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
+            
+            cell.configureData(item: items[indexPath.row])
+            
+            return cell
+            
+        default:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "RecommendedItemCollectionViewCell", for: indexPath)
+            cell.backgroundColor = .blue
+            
+            return cell
+        }
+
     }
     
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

@@ -14,7 +14,6 @@ class BaseView: UIView {
         configureSubviews()
         configureConstraints()
         configureStyle()
-        configureCollectionViewLayout()
     }
     
     @available(*, unavailable)
@@ -25,5 +24,4 @@ class BaseView: UIView {
     func configureSubviews() {}
     func configureConstraints() {}
     func configureStyle() {}
-    func configureCollectionViewLayout() {}
 }
