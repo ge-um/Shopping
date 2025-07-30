@@ -46,7 +46,7 @@ class SearchResultViewController: UIViewController {
     // TODO: - 비동기처리 하기
     // TODO: - 중복 줄이기
     private func configureInitialNetworkData() {
-        NetworkManager.shared.callRequest(query: query, start: start) { [weak self] result in
+        NetworkManager.shared.callRequest(query: query, start: start) { [weak self](result: Result<ShoppingResponse, Error>) in
             guard let self else { return }
 
             switch result {
@@ -61,7 +61,7 @@ class SearchResultViewController: UIViewController {
             }
         }
         
-        NetworkManager.shared.callRequest(start: 1) { [weak self] result in
+        NetworkManager.shared.callRequest(start: 1) { [weak self] (result: Result<ShoppingResponse, Error>) in
             guard let self else { return }
             
             switch result {
@@ -102,7 +102,7 @@ extension SearchResultViewController {
             
             start = 1
             
-            NetworkManager.shared.callRequest(query: query, start: start, type: type) { [weak self] result in
+            NetworkManager.shared.callRequest(query: query, start: start, type: type) { [weak self] (result: Result<ShoppingResponse, Error>) in
                 guard let self = self else { return }
                 
                 switch result {
@@ -160,7 +160,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         if indexPath.item == items.count - 3 && !isEnd {
             start += 30
             
-            NetworkManager.shared.callRequest(query: query, start: start) { [weak self] result in
+            NetworkManager.shared.callRequest(query: query, start: start) { [weak self] (result: Result<ShoppingResponse, Error>) in
                 guard let self = self else { return }
                 
                 switch result {
