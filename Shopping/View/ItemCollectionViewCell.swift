@@ -153,7 +153,13 @@ extension ItemCollectionViewCell: CustomViewProtocol {
     
     internal func configureData(item: Item) {
         itemImageView.kf.indicatorType = .activity
-        itemImageView.kf.setImage(with: URL(string: item.image))
+        itemImageView.kf.setImage(with: URL(string: item.image), options:
+                                    [.processor(DownsamplingImageProcessor(size: itemImageView.bounds.size)),
+                                     .scaleFactor(UIScreen.main.scale),
+                                     .cacheOriginalImage,
+                                     .memoryCacheExpiration(.days(1))
+                                    ]
+        )
         mallNameLabel.text = item.mallName
         titleLabel.text = item.title
         priceLabel.text = Int(item.lprice)?.formatted(.number)
