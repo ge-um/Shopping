@@ -15,7 +15,7 @@ class NetworkManager {
     private init() {}
     
     func callRequest<T: Decodable>(query: String = "강아지", start: Int, type: SortType = .sim, completionHandler: @escaping (Result<T, Error>) -> Void) {
-        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=30&start=\(start)&sort=\(type.rawValue)"
+        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=100&start=\(start)&sort=\(type.rawValue)"
         
         let header: HTTPHeaders = [
             "X-Naver-Client-Id":
