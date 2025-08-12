@@ -51,7 +51,8 @@ class SearchResultViewController: UIViewController {
 
             switch result {
             case .success(let response):
-                initializeItems(items: response.items)
+                self.items = response.items
+                searchResultView.collectionView.reloadData()
                 
                 let total = response.total
                 searchResultView.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
@@ -61,25 +62,43 @@ class SearchResultViewController: UIViewController {
             }
         }
         
-        NetworkManager.shared.callRequest(start: 1) { [weak self] (result: Result<ShoppingResponse, Error>) in
-            guard let self else { return }
+//        NetworkManager.shared.callRequest(start: 1) { [weak self] (result: Result<ShoppingResponse, Error>) in
+//            guard let self else { return }
+//            
+//            switch result {
+//            case .success(let response):
+//                self.recommendedItems = response.items
+//                searchResultView.peopleAlsoLikeCollectionView.reloadData()
+//            case .failure(let error):
+//                showAlert(message: error.localizedDescription)
+//            }
+//
+//        }
+    }
+    
+    func callRequest(start: Int) {
+        NetworkManager.shared.callRequest(query: query, start: start) { [weak self] (result: Result<ShoppingResponse, Error>) in
+            guard let self = self else { return }
             
             switch result {
             case .success(let response):
-                self.recommendedItems = response.items
-                searchResultView.peopleAlsoLikeCollectionView.reloadData()
+                let items = response.items
+                self.items.append(contentsOf: items)
+                
+                isEnd = response.total == 0
+                
+                searchResultView.collectionView.reloadData()
             case .failure(let error):
                 showAlert(message: error.localizedDescription)
             }
-
         }
     }
     
-    private func initializeItems(items: [Item]) {
-        self.items = items
-        
-        searchResultView.collectionView.reloadData()
-    }
+//    private func initializeItems(items: [Item]) {
+//        self.items = items
+//        
+//        searchResultView.collectionView.reloadData()
+//    }
 }
 
 extension SearchResultViewController {
@@ -107,7 +126,8 @@ extension SearchResultViewController {
                 
                 switch result {
                 case .success(let response):
-                    initializeItems(items: response.items)
+                    self.items = response.items
+                    searchResultView.collectionView.reloadData()
                     
                     searchResultView.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
                 case.failure(let error):
@@ -124,9 +144,9 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         searchResultView.collectionView.dataSource = self
         searchResultView.collectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
         
-        searchResultView.peopleAlsoLikeCollectionView.delegate = self
-        searchResultView.peopleAlsoLikeCollectionView.dataSource = self
-        searchResultView.peopleAlsoLikeCollectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
+//        searchResultView.peopleAlsoLikeCollectionView.delegate = self
+//        searchResultView.peopleAlsoLikeCollectionView.dataSource = self
+//        searchResultView.peopleAlsoLikeCollectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
     }
     
     internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -134,7 +154,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         switch collectionView {
             
         case searchResultView.collectionView: return items.count
-        case searchResultView.peopleAlsoLikeCollectionView: return recommendedItems.count
+//        case searchResultView.peopleAlsoLikeCollectionView: return recommendedItems.count
             
         default: return 0
             
@@ -147,7 +167,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         switch collectionView {
             
         case searchResultView.collectionView: cell.configureData(item: items[indexPath.row])
-        case searchResultView.peopleAlsoLikeCollectionView: cell.configureData(item: recommendedItems[indexPath.row])
+//        case searchResultView.peopleAlsoLikeCollectionView: cell.configureData(item: recommendedItems[indexPath.row])
             
         default: break
             
@@ -160,21 +180,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         if indexPath.item == items.count - 3 && !isEnd {
             start += 30
             
-            NetworkManager.shared.callRequest(query: query, start: start) { [weak self] (result: Result<ShoppingResponse, Error>) in
-                guard let self = self else { return }
-                
-                switch result {
-                case .success(let response):
-                    let items = response.items
-                    self.items.append(contentsOf: items)
-                    
-                    isEnd = response.total == 0
-                    
-                    searchResultView.collectionView.reloadData()
-                case .failure(let error):
-                    showAlert(message: error.localizedDescription)
-                }
-            }
+            callRequest(start: start)
         }
     }
 }
