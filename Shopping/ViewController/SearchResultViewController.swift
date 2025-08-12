@@ -68,15 +68,11 @@ class SearchResultViewController: UIViewController {
         return collectionView
     }()
     
-    
     /// collectionView Property
     private let query: String
     private var items = [Item]()
     private var start = 1
     private var isEnd = false
-    
-//    /// peopleAlsoLikeCollectionView Property
-//    private var recommendedItems = [Item]()
         
     init(query: String) {
         self.query = query
@@ -108,7 +104,6 @@ class SearchResultViewController: UIViewController {
         view.addSubview(totalLabel)
         view.addSubview(stackView)
         view.addSubview(collectionView)
-//        addSubview(peopleAlsoLikeCollectionView)
     }
     
     private func configureConstraints() {
@@ -147,21 +142,8 @@ class SearchResultViewController: UIViewController {
                 showAlert(message: error.localizedDescription)
             }
         }
-        
-//        NetworkManager.shared.callRequest(start: 1) { [weak self] (result: Result<ShoppingResponse, Error>) in
-//            guard let self else { return }
-//            
-//            switch result {
-//            case .success(let response):
-//                self.recommendedItems = response.items
-//                searchResultView.peopleAlsoLikeCollectionView.reloadData()
-//            case .failure(let error):
-//                showAlert(message: error.localizedDescription)
-//            }
-//
-//        }
     }
-    
+        
     func callRequest(start: Int) {
         NetworkManager.shared.callRequest(query: query, start: start) { [weak self] (result: Result<ShoppingResponse, Error>) in
             guard let self = self else { return }
@@ -187,7 +169,7 @@ extension SearchResultViewController {
         buttons.forEach { $0.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)}
     }
     
-    @objc func buttonTapped(_ sender: UIButton) {        
+    @objc func buttonTapped(_ sender: UIButton) {
         stackView.arrangedSubviews.forEach { view in
             let button = view as! UIButton
             button.isSelected = false
@@ -217,28 +199,13 @@ extension SearchResultViewController {
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        switch collectionView {
-            
-        case collectionView: return items.count
-//        case searchResultView.peopleAlsoLikeCollectionView: return recommendedItems.count
-            
-        default: return 0
-            
-        }
+        return items.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
         
-        switch collectionView {
-            
-        case collectionView: cell.configureData(item: items[indexPath.row])
-//        case searchResultView.peopleAlsoLikeCollectionView: cell.configureData(item: recommendedItems[indexPath.row])
-            
-        default: break
-            
-        }
+        cell.configureData(item: items[indexPath.row])
                 
         return cell
     }
