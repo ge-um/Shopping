@@ -59,7 +59,3 @@ extension HomeViewController: CustomViewProtocol {
         navigationController?.pushViewController(vc, animated: true)
     }
 }
-
-#Preview {
-    HomeViewController()
-}

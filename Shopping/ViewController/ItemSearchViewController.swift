@@ -62,7 +62,3 @@ extension ItemSearchViewController: UISearchBarDelegate {
         navigationController?.pushViewController(SearchResultViewController(query: query), animated: true)
     }
 }
-
-#Preview {
-    ItemSearchViewController()
-}
