@@ -7,7 +7,7 @@
 
 struct ShoppingResponse: Decodable {
     let total: Int
-    let items: [Item]
+    var items: [Item]
     
     var overview: String {
         "\(total.formatted(.number)) 개의 검색 결과"

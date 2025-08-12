@@ -69,12 +69,9 @@ class SearchResultViewController: UIViewController {
     }()
     
     let viewModel = SearchResultViewModel()
-    /// collectionView Property
+    
     private let query: String
-    private var items = [Item]()
-    private var start = 1
-    private var isEnd = false
-        
+
     init(query: String) {
         self.query = query
         super.init(nibName: nil, bundle: nil)
@@ -129,26 +126,8 @@ class SearchResultViewController: UIViewController {
         viewModel.inputQuery.value = query
     
         viewModel.outputResponse.lazyBind { response in
-            self.totalLabel.text = response?.overview
+            self.totalLabel.text = response.overview
             self.collectionView.reloadData()
-        }
-    }
-        
-    private func addNextShoppingData(start: Int) {
-        NetworkManager.shared.callRequest(query: query, start: start) { [weak self] (result: Result<ShoppingResponse, Error>) in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let response):
-                let items = response.items
-                self.items.append(contentsOf: items)
-                
-                isEnd = response.total == 0
-                
-                collectionView.reloadData()
-            case .failure(let error):
-                showAlert(message: error.localizedDescription)
-            }
         }
     }
 }
@@ -177,13 +156,13 @@ extension SearchResultViewController {
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.outputResponse.value?.items.count ?? 0
+        return viewModel.outputResponse.value.items.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
         
-        guard let item = viewModel.outputResponse.value?.items[indexPath.row] else { return UICollectionViewCell() }
+        let item = viewModel.outputResponse.value.items[indexPath.row]
         
         cell.configureData(item: item)
                 
@@ -191,11 +170,9 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
     }
     
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        let count = viewModel.outputResponse.value?.items.count ?? 0
-        if indexPath.item == count - 3 && !isEnd {
-            start += 30
-            
-            addNextShoppingData(start: start)
+        let count = viewModel.outputResponse.value.items.count
+        if indexPath.item == count - 3 && !viewModel.outputIsEnd.value {
+            viewModel.inputStartNum.value += 30
         }
     }
 }
