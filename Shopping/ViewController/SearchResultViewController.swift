@@ -16,8 +16,36 @@ class SearchResultViewController: UIViewController {
         return label
     }()
     
-    let sortStackView = SortStackView()
+    let accuracyButton: UIButton = {
+        let button = UIButton.makeButton(title: SortType.sim.title)
+        button.isSelected = true
+        return button
+    }()
     
+    let dateButton: UIButton = {
+        let button = UIButton.makeButton(title: SortType.date.title)
+        return button
+    }()
+    
+    let ascButton: UIButton = {
+        let button = UIButton.makeButton(title: SortType.asc.title)
+        return button
+    }()
+    
+    let dscButton: UIButton = {
+        let button = UIButton.makeButton(title: SortType.dsc.title)
+        return button
+    }()
+    
+    let stackView: UIStackView = {
+        let stackView = UIStackView()
+        
+        stackView.distribution = .fillProportionally
+        stackView.spacing = 8
+        
+        return stackView
+    }()
+        
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let deviceWidth = UIScreen.main.bounds.width
@@ -50,17 +78,11 @@ class SearchResultViewController: UIViewController {
     
 //    /// peopleAlsoLikeCollectionView Property
 //    private var recommendedItems = [Item]()
-    
-//    private let searchResultView = SearchResultView()
-    
+        
     init(query: String) {
         self.query = query
         super.init(nibName: nil, bundle: nil)
     }
-//    
-//    override func loadView() {
-//        self.view = searchResultView
-//    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -79,8 +101,13 @@ class SearchResultViewController: UIViewController {
     }
     
     private func configureSubviews() {
+        stackView.addArrangedSubview(accuracyButton)
+        stackView.addArrangedSubview(dateButton)
+        stackView.addArrangedSubview(ascButton)
+        stackView.addArrangedSubview(dscButton)
+        
         view.addSubview(totalLabel)
-        view.addSubview(sortStackView)
+        view.addSubview(stackView)
         view.addSubview(collectionView)
 //        addSubview(peopleAlsoLikeCollectionView)
     }
@@ -91,13 +118,13 @@ class SearchResultViewController: UIViewController {
             make.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(12)
         }
         
-        sortStackView.snp.makeConstraints { make in
+        stackView.snp.makeConstraints { make in
             make.top.equalTo(totalLabel.snp.bottom).offset(8)
             make.leading.equalTo(view.safeAreaLayoutGuide).inset(12)
         }
         
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(sortStackView.snp.bottom).offset(8)
+            make.top.equalTo(stackView.snp.bottom).offset(8)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
             make.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
         }
@@ -157,36 +184,35 @@ class SearchResultViewController: UIViewController {
 
 extension SearchResultViewController {
     internal func bindActions() {
-        for button in sortStackView.buttons {
-            button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
-        }
+        let buttons = stackView.arrangedSubviews.map { $0 as! UIButton }
+        buttons.forEach { $0.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)}
     }
     
     @objc func buttonTapped(_ sender: UIButton) {
         print(#function)
-        for button in sortStackView.buttons {
-            button.isSelected = button == sender ? true : false
+        
+        stackView.arrangedSubviews.forEach { view in
+            let button = view as! UIButton
+            button.isSelected = false
+        }
+        
+        sender.isSelected = true
+        
+        guard let title = sender.titleLabel?.text,
+              let type = SortType.allCases.first(where: { $0.title == title }) else { return }
+        
+        start = 1
+        
+        NetworkManager.shared.callRequest(query: query, start: start, type: type) { [weak self] (result: Result<ShoppingResponse, Error>) in
+            guard let self = self else { return }
             
-            if button != sender { continue }
-            
-            guard let title = button.titleLabel?.text, let type = SortType.allCases.first(where: { $0.title == title }) else {
-                return
-            }
-            
-            start = 1
-            
-            NetworkManager.shared.callRequest(query: query, start: start, type: type) { [weak self] (result: Result<ShoppingResponse, Error>) in
-                guard let self = self else { return }
-                
-                switch result {
-                case .success(let response):
-                    self.items = response.items
-                    collectionView.reloadData()
-                    
-                    collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
-                case.failure(let error):
-                    showAlert(message: error.localizedDescription)
-                }
+            switch result {
+            case .success(let response):
+                self.items = response.items
+                collectionView.reloadData()
+                collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+            case.failure(let error):
+                showAlert(message: error.localizedDescription)
             }
         }
     }
