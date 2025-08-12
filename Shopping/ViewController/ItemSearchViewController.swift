@@ -18,6 +18,8 @@ class ItemSearchViewController: UIViewController {
         return searchBar
     }()
     
+    let viewModel = ItemSearchViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -25,40 +27,45 @@ class ItemSearchViewController: UIViewController {
         configureConstraints()
         configureStyle()
         bindActions()
+        bindData()
     }
 }
 
 extension ItemSearchViewController: CustomViewProtocol {
-    internal func configureSubviews() {
+    func configureSubviews() {
         view.addSubview(itemSearchBar)
     }
     
-    internal func configureConstraints() {
+    func configureConstraints() {
         itemSearchBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
     }
     
-    internal func configureStyle() {
+    func configureStyle() {
         view.backgroundColor = .black
         navigationItem.titleView = BoldNavigationTitle(text: "영캠러의 쇼핑쇼핑")
     }
     
-    internal func bindActions() {
+    func bindActions() {
         itemSearchBar.delegate = self
+    }
+    
+    private func bindData() {
+        viewModel.outputQueryText.lazyBind { [unowned self] query in
+            let vc = SearchResultViewController(query: query)
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+        
+        viewModel.outputQueryErrorText.lazyBind { [unowned self] errorText in
+            showAlert(message: errorText)
+        }
     }
 }
 
 extension ItemSearchViewController: UISearchBarDelegate {
-    internal func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let query = searchBar.text!
-        
-        guard query.count >= 2 else {
-            showAlert(message: "텍스트를 두 글자 이상 입력하세요")
-            return
-        }
-        
-        navigationController?.pushViewController(SearchResultViewController(query: query), animated: true)
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.inputQueryText.value = searchBar.text
     }
 }
