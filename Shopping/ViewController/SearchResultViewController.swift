@@ -68,6 +68,7 @@ class SearchResultViewController: UIViewController {
         return collectionView
     }()
     
+    let viewModel = SearchResultViewModel()
     /// collectionView Property
     private let query: String
     private var items = [Item]()
@@ -92,8 +93,7 @@ class SearchResultViewController: UIViewController {
         configureSubviews()
         configureConstraints()
         bindActions()
-        updateShoppingData()
-//        configureInitialNetworkData()
+        bindData()
     }
     
     private func configureSubviews() {
@@ -125,22 +125,12 @@ class SearchResultViewController: UIViewController {
         }
     }
     
-    // TODO: - 비동기처리 하기
-    private func updateShoppingData(type: SortType = .sim) {
-        NetworkManager.shared.callRequest(query: query, start: start, type: type) { [weak self](result: Result<ShoppingResponse, Error>) in
-            guard let self else { return }
-
-            switch result {
-            case .success(let response):
-                self.items = response.items
-                collectionView.reloadData()
-                
-                let total = response.total
-                totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
-                
-            case .failure(let error):
-                showAlert(message: error.localizedDescription)
-            }
+    private func bindData() {
+        viewModel.inputQuery.value = query
+    
+        viewModel.outputResponse.lazyBind { response in
+            self.totalLabel.text = response?.overview
+            self.collectionView.reloadData()
         }
     }
         
@@ -180,28 +170,29 @@ extension SearchResultViewController {
         guard let title = sender.titleLabel?.text,
               let type = SortType.allCases.first(where: { $0.title == title }) else { return }
         
-        start = 1
-        
-        updateShoppingData(type: type)
+        viewModel.inputType.value = type
         collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
     }
 }
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return items.count
+        return viewModel.outputResponse.value?.items.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
         
-        cell.configureData(item: items[indexPath.row])
+        guard let item = viewModel.outputResponse.value?.items[indexPath.row] else { return UICollectionViewCell() }
+        
+        cell.configureData(item: item)
                 
         return cell
     }
     
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.item == items.count - 3 && !isEnd {
+        let count = viewModel.outputResponse.value?.items.count ?? 0
+        if indexPath.item == count - 3 && !isEnd {
             start += 30
             
             addNextShoppingData(start: start)
