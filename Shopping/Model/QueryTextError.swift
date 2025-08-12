@@ -5,6 +5,8 @@
 //  Created by 금가경 on 8/12/25.
 //
 
+import Foundation
+
 enum QueryTextError: Error {
     case `nil`
     case outOfRange
