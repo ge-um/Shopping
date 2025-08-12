@@ -9,25 +9,58 @@ import Alamofire
 import UIKit
 
 class SearchResultViewController: UIViewController {
+    let totalLabel = {
+        let label = UILabel()
+        label.textColor = .systemGreen
+        label.font = .systemFont(ofSize: 13, weight: .bold)
+        return label
+    }()
+    
+    let sortStackView = SortStackView()
+    
+    lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        let deviceWidth = UIScreen.main.bounds.width
+        let cellWidth = deviceWidth - (2 * 12) - (1 * 12)
+        
+        layout.scrollDirection = .vertical
+        layout.itemSize = CGSize(width: cellWidth / 2, height: cellWidth / 2 + 80)
+        layout.minimumInteritemSpacing = 12
+        layout.minimumLineSpacing = 8
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+
+        collectionView.collectionViewLayout = layout
+        collectionView.backgroundColor = .clear
+        
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
+        
+        return collectionView
+    }()
+    
+    
     /// collectionView Property
     private let query: String
     private var items = [Item]()
     private var start = 1
     private var isEnd = false
     
-    /// peopleAlsoLikeCollectionView Property
-    private var recommendedItems = [Item]()
+//    /// peopleAlsoLikeCollectionView Property
+//    private var recommendedItems = [Item]()
     
-    private let searchResultView = SearchResultView()
+//    private let searchResultView = SearchResultView()
     
     init(query: String) {
         self.query = query
         super.init(nibName: nil, bundle: nil)
     }
-    
-    override func loadView() {
-        self.view = searchResultView
-    }
+//    
+//    override func loadView() {
+//        self.view = searchResultView
+//    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -36,11 +69,38 @@ class SearchResultViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = .black
         navigationItem.titleView = BoldNavigationTitle(text: query)
         
+        configureSubviews()
+        configureConstraints()
         bindActions()
-        configureCollectionView()
         configureInitialNetworkData()
+    }
+    
+    private func configureSubviews() {
+        view.addSubview(totalLabel)
+        view.addSubview(sortStackView)
+        view.addSubview(collectionView)
+//        addSubview(peopleAlsoLikeCollectionView)
+    }
+    
+    private func configureConstraints() {
+        totalLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
+            make.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(12)
+        }
+        
+        sortStackView.snp.makeConstraints { make in
+            make.top.equalTo(totalLabel.snp.bottom).offset(8)
+            make.leading.equalTo(view.safeAreaLayoutGuide).inset(12)
+        }
+        
+        collectionView.snp.makeConstraints { make in
+            make.top.equalTo(sortStackView.snp.bottom).offset(8)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
+        }
     }
     
     // TODO: - 비동기처리 하기
@@ -52,10 +112,10 @@ class SearchResultViewController: UIViewController {
             switch result {
             case .success(let response):
                 self.items = response.items
-                searchResultView.collectionView.reloadData()
+                collectionView.reloadData()
                 
                 let total = response.total
-                searchResultView.totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
+                totalLabel.text = "\(total.formatted(.number)) 개의 검색 결과"
                 
             case .failure(let error):
                 showAlert(message: error.localizedDescription)
@@ -87,30 +147,24 @@ class SearchResultViewController: UIViewController {
                 
                 isEnd = response.total == 0
                 
-                searchResultView.collectionView.reloadData()
+                collectionView.reloadData()
             case .failure(let error):
                 showAlert(message: error.localizedDescription)
             }
         }
     }
-    
-//    private func initializeItems(items: [Item]) {
-//        self.items = items
-//        
-//        searchResultView.collectionView.reloadData()
-//    }
 }
 
 extension SearchResultViewController {
     internal func bindActions() {
-        for button in searchResultView.sortStackView.buttons {
+        for button in sortStackView.buttons {
             button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
         }
     }
     
     @objc func buttonTapped(_ sender: UIButton) {
         print(#function)
-        for button in searchResultView.sortStackView.buttons {
+        for button in sortStackView.buttons {
             button.isSelected = button == sender ? true : false
             
             if button != sender { continue }
@@ -127,9 +181,9 @@ extension SearchResultViewController {
                 switch result {
                 case .success(let response):
                     self.items = response.items
-                    searchResultView.collectionView.reloadData()
+                    collectionView.reloadData()
                     
-                    searchResultView.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+                    collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
                 case.failure(let error):
                     showAlert(message: error.localizedDescription)
                 }
@@ -139,21 +193,11 @@ extension SearchResultViewController {
 }
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    private func configureCollectionView() {
-        searchResultView.collectionView.delegate = self
-        searchResultView.collectionView.dataSource = self
-        searchResultView.collectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
-        
-//        searchResultView.peopleAlsoLikeCollectionView.delegate = self
-//        searchResultView.peopleAlsoLikeCollectionView.dataSource = self
-//        searchResultView.peopleAlsoLikeCollectionView.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
-    }
-    
-    internal func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         switch collectionView {
             
-        case searchResultView.collectionView: return items.count
+        case collectionView: return items.count
 //        case searchResultView.peopleAlsoLikeCollectionView: return recommendedItems.count
             
         default: return 0
@@ -161,12 +205,12 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         }
     }
     
-    internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
         
         switch collectionView {
             
-        case searchResultView.collectionView: cell.configureData(item: items[indexPath.row])
+        case collectionView: cell.configureData(item: items[indexPath.row])
 //        case searchResultView.peopleAlsoLikeCollectionView: cell.configureData(item: recommendedItems[indexPath.row])
             
         default: break
