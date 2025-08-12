@@ -20,6 +20,7 @@
 		03206A182E33A5AD00D85302 /* Exceptions for "Shopping" folder in "Shopping" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Config/Secrets.xcconfig,
 				Info.plist,
 			);
 			target = 03206A052E33A5AB00D85302 /* Shopping */;
@@ -103,7 +104,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					03206A052E33A5AB00D85302 = {
 						CreatedOnToolsVersion = 16.2;
@@ -164,7 +165,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RFZY2ACQ74;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Shopping/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
@@ -199,7 +199,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RFZY2ACQ74;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Shopping/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
@@ -262,6 +261,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = RFZY2ACQ74;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -325,6 +325,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = RFZY2ACQ74;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
