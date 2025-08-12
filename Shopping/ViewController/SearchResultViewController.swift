@@ -5,7 +5,6 @@
 //  Created by 금가경 on 7/26/25.
 //
 
-import Alamofire
 import UIKit
 
 class SearchResultViewController: UIViewController {
@@ -188,9 +187,7 @@ extension SearchResultViewController {
         buttons.forEach { $0.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)}
     }
     
-    @objc func buttonTapped(_ sender: UIButton) {
-        print(#function)
-        
+    @objc func buttonTapped(_ sender: UIButton) {        
         stackView.arrangedSubviews.forEach { view in
             let button = view as! UIButton
             button.isSelected = false
