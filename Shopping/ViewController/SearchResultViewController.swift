@@ -129,6 +129,11 @@ class SearchResultViewController: UIViewController {
             self.totalLabel.text = response.overview
             self.collectionView.reloadData()
         }
+        
+        viewModel.outputError.lazyBind { error in
+            guard let error = error else { return }
+            self.showAlert(message: error.localizedDescription)
+        }
     }
 }
 

@@ -13,6 +13,7 @@ final class SearchResultViewModel {
     var inputType: Observable<SortType> = Observable(.sim)
     
     var outputResponse: Observable<ShoppingResponse> = Observable(ShoppingResponse(total: 0, items: []))
+    var outputError: Observable<Error?> = Observable(nil)
     var outputIsEnd: Observable<Bool> = Observable(false)
     
     init() {
@@ -37,9 +38,13 @@ final class SearchResultViewModel {
             switch result {
             case .success(let response):
                 outputResponse.value = response
+                outputError.value = nil
+
                 
             case .failure(let error):
                 print(error)
+                outputError.value = error
+
             }
         }
     }
@@ -53,14 +58,12 @@ final class SearchResultViewModel {
                 let items = response.items
                 
                 outputResponse.value.items.append(contentsOf: items)
-//                output.append(contentsOf: items)
-                
                 outputIsEnd.value = response.total == 0
+                outputError.value = nil
                 
-//                collectionView.reloadData()
             case .failure(let error):
                 print(error)
-//                showAlert(message: error.localizedDescription)
+                outputError.value = error
             }
         }
     }
