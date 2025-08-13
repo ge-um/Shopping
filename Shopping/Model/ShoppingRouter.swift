@@ -17,20 +17,10 @@ enum ShoppingRouter {
     }
     
     var endPoint: URL? {
-        switch self {
-
-        case .getSortedShoppingResponse(let query, let sort):
-            guard let url = URL(string: baseURL + "query=\(query)&display=100&sort=\(sort)") else {
-                return nil
-            }
-            return url
-            
-        case .addShoppingResponse(let query, let start, let sort):
-            guard let url = URL(string: baseURL + "query=\(query)&display=100&start=\(start)&sort=\(sort)") else {
-                return nil
-            }
-            return url
+        guard let url = URL(string: baseURL) else {
+            return nil
         }
+        return url
     }
     
     var header: HTTPHeaders {
@@ -40,14 +30,12 @@ enum ShoppingRouter {
             Bundle.main.infoDictionary?["NaverClientSecret"] as! String]
     }
     
-//    var parameter: Parameters {
-//        switch self {
-////        case .getShoppingResponse(let query):
-////            ["query": query]
-//        case .getSortedShoppingResponse(let query, let sort):
-//            <#code#>
-//        case .addShoppingResponse(let query, let start, let sort):
-//            <#code#>
-//        }
-//    }
+    var parameters: Parameters {
+        switch self {
+        case .getSortedShoppingResponse(let query, let sort):
+            ["query": "\(query)", "sort": "\(sort)"]
+        case .addShoppingResponse(let query, let start, let sort):
+            ["query": "\(query)", "start": "\(start)", "sort": "\(sort)"]
+        }
+    }
 }

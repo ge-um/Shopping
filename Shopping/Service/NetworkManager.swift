@@ -22,7 +22,7 @@ class NetworkManager {
         }
         
         // TODO: - 나은 방법 + 앱 상태 (ex- 네트워크 처리)에 따라 분기처리 필요
-        AF.request(endPoint, method: .get, headers: api.header)
+        AF.request(endPoint, method: .get, parameters: api.parameters, headers: api.header)
             .validate(statusCode: 200..<300)
             .responseDecodable(of: T.self) { response in
                 switch response.result {
