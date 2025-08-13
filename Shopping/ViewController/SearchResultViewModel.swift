@@ -23,10 +23,10 @@ final class SearchResultViewModel {
     var input: Input
     var output: Output
     
-    init() {
+    init(query: String) {
         input = Input()
         output = Output()
-        
+                
         input.query.lazyBind { query in
             self.updateShoppingData(query: query, start: self.input.startNum.value, type: self.input.type.value)
         }
@@ -38,6 +38,8 @@ final class SearchResultViewModel {
         input.startNum.lazyBind { start in
             self.addNextShoppingData(start: start)
         }
+        
+        input.query.value = query
     }
     
     // TODO: - 비동기처리 하기

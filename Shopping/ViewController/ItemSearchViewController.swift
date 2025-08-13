@@ -54,7 +54,8 @@ extension ItemSearchViewController: CustomViewProtocol {
     
     private func bindData() {
         viewModel.output.queryText.lazyBind { [unowned self] query in
-            let vc = SearchResultViewController(query: query)
+            let vm = SearchResultViewModel(query: query)
+            let vc = SearchResultViewController(viewModel: vm)
             self.navigationController?.pushViewController(vc, animated: true)
         }
         

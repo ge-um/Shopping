@@ -68,13 +68,10 @@ class SearchResultViewController: UIViewController {
         return collectionView
     }()
     
+    let viewModel: SearchResultViewModel
     
-    private let query: String
-
-    let viewModel = SearchResultViewModel()
-
-    init(query: String) {
-        self.query = query
+    init(viewModel: SearchResultViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -86,7 +83,8 @@ class SearchResultViewController: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .black
-        navigationItem.titleView = BoldNavigationTitle(text: query)
+        
+        navigationItem.titleView = BoldNavigationTitle(text: viewModel.input.query.value)
         
         configureSubviews()
         configureConstraints()
@@ -123,9 +121,7 @@ class SearchResultViewController: UIViewController {
         }
     }
     
-    private func bindData() {
-        viewModel.input.query.value = query
-    
+    private func bindData() {    
         viewModel.output.response.lazyBind { response in
             self.totalLabel.text = response.overview
             self.collectionView.reloadData()
