@@ -38,7 +38,7 @@ final class ItemSearchViewModel {
             throw .nil
         }
         
-        guard text.trimmingCharacters(in: .whitespaces).count > 2 else {
+        guard text.trimmingCharacters(in: .whitespaces).count >= 2 else {
             throw .outOfRange
         }
         
