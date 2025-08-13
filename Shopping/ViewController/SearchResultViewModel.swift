@@ -42,7 +42,7 @@ final class SearchResultViewModel {
     
     // TODO: - 비동기처리 하기
     private func updateShoppingData(query: String, start: Int, type: SortType = .sim) {
-        NetworkManager.shared.callRequest(api: .getSortedShoppingResponse(query: query, sort: type), query: query, start: start, type: type) { [weak self](result: Result<ShoppingResponse, Error>) in
+        NetworkManager.shared.callRequest(api: .getSortedShoppingResponse(query: query, sort: type), type: ShoppingResponse.self) { [weak self] result in
             guard let self else { return }
 
             switch result {
@@ -58,7 +58,7 @@ final class SearchResultViewModel {
     }
     
     private func addNextShoppingData(start: Int) {
-        NetworkManager.shared.callRequest(api: .addShoppingResponse(query: input.query.value, start: start, sort: input.type.value), query: input.query.value, start: start) { [weak self] (result: Result<ShoppingResponse, Error>) in
+        NetworkManager.shared.callRequest(api: .addShoppingResponse(query: input.query.value, start: start, sort: input.type.value), type: ShoppingResponse.self) { [weak self] result in
             guard let self = self else { return }
             
             switch result {

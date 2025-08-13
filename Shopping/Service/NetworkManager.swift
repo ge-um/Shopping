@@ -14,7 +14,7 @@ class NetworkManager {
     
     private init() {}
     
-    func callRequest<T: Decodable>(api: ShoppingRouter, query: String, start: Int = 1, type: SortType = .sim, completionHandler: @escaping (Result<T, Error>) -> Void) {
+    func callRequest<T: Decodable>(api: ShoppingRouter, type: T.Type, completionHandler: @escaping (Result<T, Error>) -> Void) {
 
         guard let endPoint = api.endPoint else {
             completionHandler(.failure(AppError.invalidURL))
