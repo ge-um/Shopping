@@ -68,9 +68,10 @@ class SearchResultViewController: UIViewController {
         return collectionView
     }()
     
-    let viewModel = SearchResultViewModel()
     
     private let query: String
+
+    let viewModel = SearchResultViewModel()
 
     init(query: String) {
         self.query = query

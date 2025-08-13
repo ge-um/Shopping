@@ -8,6 +8,7 @@
 import Foundation
 
 enum AppError: Error {
+    case invalidURL
     case server(message: String)
     case unknown
 }
@@ -15,6 +16,8 @@ enum AppError: Error {
 extension AppError: LocalizedError {
     var errorDescription: String? {
         switch self {
+        case .invalidURL:
+            return "유효하지 않은 url입니다."
         case .server(let message):
             return message
         case .unknown:

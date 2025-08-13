@@ -14,18 +14,15 @@ class NetworkManager {
     
     private init() {}
     
-    func callRequest<T: Decodable>(query: String = "강아지", start: Int, type: SortType = .sim, completionHandler: @escaping (Result<T, Error>) -> Void) {
-        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=100&start=\(start)&sort=\(type.rawValue)"
-        
-        let header: HTTPHeaders = [
-            "X-Naver-Client-Id":
-                Bundle.main.infoDictionary?["NaverClientId"] as! String,
-            "X-Naver-Client-Secret":
-                Bundle.main.infoDictionary?["NaverClientSecret"] as! String
-        ]
+    func callRequest<T: Decodable>(api: ShoppingRouter, query: String, start: Int = 1, type: SortType = .sim, completionHandler: @escaping (Result<T, Error>) -> Void) {
+
+        guard let endPoint = api.endPoint else {
+            completionHandler(.failure(AppError.invalidURL))
+            return
+        }
         
         // TODO: - 나은 방법 + 앱 상태 (ex- 네트워크 처리)에 따라 분기처리 필요
-        AF.request(url, method: .get, headers: header)
+        AF.request(endPoint, method: .get, headers: api.header)
             .validate(statusCode: 200..<300)
             .responseDecodable(of: T.self) { response in
                 switch response.result {
