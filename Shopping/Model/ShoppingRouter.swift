@@ -8,12 +8,7 @@
 import Alamofire
 import Foundation
 
-/// query / start = 1 / sort = .sim
-/// query/ start = 1/ sort =
-/// let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=100&start=\(start)&sort=\(type.rawValue)"
-///
 enum ShoppingRouter {
-    case getShoppingResponse(query: String)
     case getSortedShoppingResponse(query: String, sort: SortType)
     case addShoppingResponse(query: String, start: Int, sort: SortType)
 
@@ -23,12 +18,7 @@ enum ShoppingRouter {
     
     var endPoint: URL? {
         switch self {
-        case .getShoppingResponse(let query):
-            guard let url = URL(string: baseURL + "query=\(query)&display=100") else {
-                return nil
-            }
-            return url
-            
+
         case .getSortedShoppingResponse(let query, let sort):
             guard let url = URL(string: baseURL + "query=\(query)&display=100&sort=\(sort)") else {
                 return nil
@@ -52,8 +42,8 @@ enum ShoppingRouter {
     
 //    var parameter: Parameters {
 //        switch self {
-//        case .getShoppingResponse(let query):
-//            ["query": ]
+////        case .getShoppingResponse(let query):
+////            ["query": query]
 //        case .getSortedShoppingResponse(let query, let sort):
 //            <#code#>
 //        case .addShoppingResponse(let query, let start, let sort):
