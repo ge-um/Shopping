@@ -8,19 +8,27 @@
 import Foundation
 
 final class ItemSearchViewModel {
-    var inputQueryText: Observable<String?> = Observable(nil)
+    struct Input {
+        var queryText: Observable<String?> = Observable(nil)
+
+    }
     
-    var outputQueryText: Observable<String> = Observable("")
-    var outputQueryErrorText: Observable<String> = Observable("")
+    struct Output {
+        var queryText: Observable<String> = Observable("")
+        var queryErrorText: Observable<String> = Observable("")
+    }
+
+    var input = Input()
+    var output = Output()
     
     init() {
-        inputQueryText.bind { [unowned self] text in
+        input.queryText.bind { [unowned self] text in
             do {
                 let query = try validate(text)
-                self.outputQueryText.value = query
+                self.output.queryText.value = query
                 
             } catch {
-                self.outputQueryErrorText.value = error.localizedDescription
+                self.output.queryErrorText.value = error.localizedDescription
             }
         }
     }

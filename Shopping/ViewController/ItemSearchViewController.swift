@@ -53,12 +53,12 @@ extension ItemSearchViewController: CustomViewProtocol {
     }
     
     private func bindData() {
-        viewModel.outputQueryText.lazyBind { [unowned self] query in
+        viewModel.output.queryText.lazyBind { [unowned self] query in
             let vc = SearchResultViewController(query: query)
             self.navigationController?.pushViewController(vc, animated: true)
         }
         
-        viewModel.outputQueryErrorText.lazyBind { [unowned self] errorText in
+        viewModel.output.queryErrorText.lazyBind { [unowned self] errorText in
             showAlert(message: errorText)
         }
     }
@@ -66,6 +66,6 @@ extension ItemSearchViewController: CustomViewProtocol {
 
 extension ItemSearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.inputQueryText.value = searchBar.text
+        viewModel.input.queryText.value = searchBar.text
     }
 }

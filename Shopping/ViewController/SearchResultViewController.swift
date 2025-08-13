@@ -123,14 +123,14 @@ class SearchResultViewController: UIViewController {
     }
     
     private func bindData() {
-        viewModel.inputQuery.value = query
+        viewModel.input.query.value = query
     
-        viewModel.outputResponse.lazyBind { response in
+        viewModel.output.response.lazyBind { response in
             self.totalLabel.text = response.overview
             self.collectionView.reloadData()
         }
         
-        viewModel.outputError.lazyBind { error in
+        viewModel.output.error.lazyBind { error in
             guard let error = error else { return }
             self.showAlert(message: error.localizedDescription)
         }
@@ -154,20 +154,20 @@ extension SearchResultViewController {
         guard let title = sender.titleLabel?.text,
               let type = SortType.allCases.first(where: { $0.title == title }) else { return }
         
-        viewModel.inputType.value = type
+        viewModel.input.type.value = type
         collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
     }
 }
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.outputResponse.value.items.count
+        return viewModel.output.response.value.items.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
         
-        let item = viewModel.outputResponse.value.items[indexPath.row]
+        let item = viewModel.output.response.value.items[indexPath.row]
         
         cell.configureData(item: item)
                 
@@ -175,9 +175,9 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
     }
     
     internal func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        let count = viewModel.outputResponse.value.items.count
-        if indexPath.item == count - 3 && !viewModel.outputIsEnd.value {
-            viewModel.inputStartNum.value += 30
+        let count = viewModel.output.response.value.items.count
+        if indexPath.item == count - 3 && !viewModel.output.isEnd.value {
+            viewModel.input.startNum.value += 30
         }
     }
 }

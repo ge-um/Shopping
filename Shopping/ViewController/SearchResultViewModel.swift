@@ -8,24 +8,34 @@
 import Foundation
 
 final class SearchResultViewModel {
-    var inputQuery: Observable<String> = Observable("")
-    var inputStartNum: Observable<Int> = Observable(1)
-    var inputType: Observable<SortType> = Observable(.sim)
+    struct Input {
+        var query: Observable<String> = Observable("")
+        var startNum: Observable<Int> = Observable(1)
+        var type: Observable<SortType> = Observable(.sim)
+    }
+
+    struct Output {
+        var response: Observable<ShoppingResponse> = Observable(ShoppingResponse(total: 0, items: []))
+        var error: Observable<Error?> = Observable(nil)
+        var isEnd: Observable<Bool> = Observable(false)
+    }
     
-    var outputResponse: Observable<ShoppingResponse> = Observable(ShoppingResponse(total: 0, items: []))
-    var outputError: Observable<Error?> = Observable(nil)
-    var outputIsEnd: Observable<Bool> = Observable(false)
+    var input: Input
+    var output: Output
     
     init() {
-        inputQuery.lazyBind { query in
-            self.updateShoppingData(query: query, start: self.inputStartNum.value, type: self.inputType.value)
+        input = Input()
+        output = Output()
+        
+        input.query.lazyBind { query in
+            self.updateShoppingData(query: query, start: self.input.startNum.value, type: self.input.type.value)
         }
         
-        inputType.lazyBind { type in
-            self.updateShoppingData(query: self.inputQuery.value, start: 1, type: type)
+        input.type.lazyBind { type in
+            self.updateShoppingData(query: self.input.query.value, start: 1, type: type)
         }
         
-        inputStartNum.lazyBind { start in
+        input.startNum.lazyBind { start in
             self.addNextShoppingData(start: start)
         }
     }
@@ -37,33 +47,33 @@ final class SearchResultViewModel {
 
             switch result {
             case .success(let response):
-                outputResponse.value = response
-                outputError.value = nil
+                output.response.value = response
+                output.error.value = nil
 
                 
             case .failure(let error):
                 print(error)
-                outputError.value = error
+                output.error.value = error
 
             }
         }
     }
     
     private func addNextShoppingData(start: Int) {
-        NetworkManager.shared.callRequest(query: inputQuery.value, start: start) { [weak self] (result: Result<ShoppingResponse, Error>) in
+        NetworkManager.shared.callRequest(query: input.query.value, start: start) { [weak self] (result: Result<ShoppingResponse, Error>) in
             guard let self = self else { return }
             
             switch result {
             case .success(let response):
                 let items = response.items
                 
-                outputResponse.value.items.append(contentsOf: items)
-                outputIsEnd.value = response.total == 0
-                outputError.value = nil
+                output.response.value.items.append(contentsOf: items)
+                output.isEnd.value = response.total == 0
+                output.error.value = nil
                 
             case .failure(let error):
                 print(error)
-                outputError.value = error
+                output.error.value = error
             }
         }
     }
